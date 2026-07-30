@@ -74,3 +74,4 @@ http://localhost:8000/docs
 - ✅ Stage 0: Hello Server
 - ✅ Stage 1: Root and Health Endpoints
 - ✅ Stage 2: read endpoint with 404
+- ✅ Stage 3: created with validation
