@@ -5,28 +5,32 @@ class TaskCreate(BaseModel):
 class TaskUpdate(BaseModel):
     title: str | None = None
     done: bool | None = None
-app = FastAPI()
+app = FastAPI(
+    title="Task API",
+    description="A simple CRUD API built with FastAPI for the FlyRank Backend AI Engineering Internship.",
+    version="1.0.0"
+)
 tasks = [
     { "id": 1, "title": "Prayer", "done": False},
     { "id": 2, "title": "Deep Work", "done": False},
     { "id": 3, "title": "Exercise", "done": False}
     ]
-@app.get("/")
+@app.get("/", summary="Returns information about the Task API")
 async def root():
     return { 
         "name":  "Task API",
         "version": "1.0",
         "endpoints": ["/tasks"]
         }
-@app.get("/health")
+@app.get("/health", summary="Checks whether the API is running")
 async def health():
     return {
         "status": "ok"
     }
-@app.get("/tasks")
+@app.get("/tasks",summary="Returns all tasks")
 async def get_tasks():
     return tasks
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", summary="Returns a task by its ID")
 async def task_by_id(task_id: int):
     for task in tasks:
         if  task["id"] == task_id:
@@ -35,7 +39,7 @@ async def task_by_id(task_id: int):
         status_code=status.HTTP_404_NOT_FOUND,
         detail={"error":f"Task {task_id} not found"}
     )
-@app.post("/tasks", status_code=status.HTTP_201_CREATED)
+@app.post("/tasks", status_code=status.HTTP_201_CREATED, summary="Create a new Task")
 async def create_task(task_data: TaskCreate):
     if not task_data.title or task_data.title.strip() == "":
         raise HTTPException(
@@ -50,7 +54,7 @@ async def create_task(task_data: TaskCreate):
     }
     tasks.append(new_task)
     return new_task
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}",summary="Updates an existing task")
 async def update_task(task_id: int, task_data: TaskUpdate):
     if task_data.title is None and task_data.done is None:
         raise HTTPException(
@@ -73,7 +77,7 @@ async def update_task(task_id: int, task_data: TaskUpdate):
         status_code=status.HTTP_404_NOT_FOUND,
         detail={"error": f"Task {task_id} not found"}
     )
-@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Deletes a task")
 async def delete_task(task_id:int):
     for index,task in enumerate(tasks):
         if task["id"] == task_id:
