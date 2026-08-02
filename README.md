@@ -101,7 +101,7 @@ http://localhost:8000/docs
 
 The following screenshot shows the automatically generated Swagger UI for the Task API.
 
-![Swagger UI](images/swagger-ui.png)
+![Swagger UI](images/Swagger-UI.png)
 
 ---
 
@@ -113,3 +113,4 @@ The following screenshot shows the automatically generated Swagger UI for the Ta
 - ✅ Stage 3: Create with Validation
 - ✅ Stage 4: Full CRUD
 - ✅ Stage 5: Swagger UI
+- ✅ Stage 6: Pubilsh and docs
