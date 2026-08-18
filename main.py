@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Query
 from pydantic import BaseModel, Field
+from typing import Annotated
 class TaskCreate(BaseModel):
     title: str | None = None
 class TaskUpdate(BaseModel):
@@ -27,9 +28,36 @@ async def health():
     return {
         "status": "ok"
     }
-@app.get("/tasks",summary="Returns all tasks")
-async def get_tasks():
+@app.get("/stats", summary = "Return task statistics")
+async def get_stats():
+    total_tasks = len(tasks)
+    done_task = sum(1 for task in tasks if task["done"] is True)
+    open_tasks = total_tasks - done_task
+    return{
+        "total":total_tasks,
+        "done":done_task,
+        "open":open_tasks
+    }
+@app.post("/reset", summary = "reset all tasks")
+async def reset_tasks():
+    tasks.clear()
+    tasks.extend([
+        { "id": 1, "title": "Prayer", "done": False},
+        { "id": 2, "title": "Deep Work", "done": False},
+        { "id": 3, "title": "Exercise", "done": False}
+        ])
     return tasks
+
+@app.get("/tasks",summary="Returns all tasks")
+async def get_tasks(done : bool | None = None, search: str | None = None):
+    clear_search = search.strip().lower() if search else ""
+    if done is None and search is None:
+        return tasks
+    elif search is None and done is not None:
+        return [task for task in tasks if task["done"] == done]
+    elif done is None and search is not None:
+        return [task for task in tasks if clear_search in task["title"].lower()]
+    return [task for task in tasks if task["done"] == done and clear_search in task["title"].lower()]
 @app.get("/tasks/{task_id}", summary="Returns a task by its ID")
 async def task_by_id(task_id: int):
     for task in tasks:
